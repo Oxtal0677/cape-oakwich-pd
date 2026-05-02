@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cape Oakwich Police Department — Personnel Roster</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Share+Tech+Mono&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0e1a;
+    --navy2: #0f1527;
+    --panel: #131929;
+    --border: #1e2d4a;
+    --gold: #c9a84c;
+    --gold2: #e8c96a;
+    --blue-accent: #2563eb;
+    --alert: #ef4444;
+    --green: #22c55e;
+    --text: #d0d8f0;
+    --muted: #5a6a8a;
+    --white: #f0f4ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% -10%, rgba(37,99,235,0.15) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(30,45,74,0.3) 39px, rgba(30,45,74,0.3) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(30,45,74,0.15) 39px, rgba(30,45,74,0.15) 40px);
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(180deg, #080c18 0%, var(--navy2) 100%);
+    border-bottom: 2px solid var(--gold);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201,168,76,0.03) 60px, rgba(201,168,76,0.03) 61px);
+    pointer-events: none;
+  }
+
+  .badge-icon { width: 72px; height: 72px; flex-shrink: 0; }
+
+  .header-text h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px; font-weight: 700;
+    color: var(--gold); letter-spacing: 3px;
+    text-transform: uppercase; line-height: 1;
+  }
+  .header-text h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px; font-weight: 400;
+    color: var(--muted); letter-spacing: 5px;
+    text-transform: uppercase; margin-top: 5px;
+  }
+  .header-text p {
+    font-size: 12px; color: var(--muted); margin-top: 6px;
+    font-family: 'Share Tech Mono', monospace; letter-spacing: 1px;
+  }
+
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+
+  .header-stats { display: flex; gap: 24px; text-align: right; }
+  .stat { display: flex; flex-direction: column; align-items: flex-end; }
+  .stat-num { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: 700; color: var(--gold); line-height: 1; }
+  .stat-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+
+  /* ADMIN BTN */
+  .admin-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 16px; border-radius: 4px;
+    font-family: 'Oswald', sans-serif; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; border: 1px solid var(--muted);
+    color: var(--muted); background: transparent; transition: all 0.2s; flex-shrink: 0;
+  }
+  .admin-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .admin-btn.unlocked { border-color: var(--green); color: var(--green); }
+  .admin-btn.unlocked:hover { border-color: var(--alert); color: var(--alert); }
+
+  /* VIEW-ONLY BANNER */
+  .view-only-banner {
+    background: rgba(37,99,235,0.08);
+    border-bottom: 1px solid rgba(37,99,235,0.2);
+    padding: 8px 24px; text-align: center;
+    font-family: 'Oswald', sans-serif; font-size: 11px;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--blue-accent);
+  }
+
+  /* MAIN */
+  .main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+  .toolbar-left { display: flex; gap: 12px; flex: 1; flex-wrap: wrap; }
+  .toolbar-right { display: flex; gap: 12px; }
+
+  input[type="text"], input[type="number"], select {
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Barlow', sans-serif;
+    font-size: 14px; padding: 10px 14px; border-radius: 4px; outline: none; transition: border-color 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--gold); }
+  input::placeholder { color: var(--muted); }
+  .search-box { flex: 1; min-width: 180px; }
+
+  .btn {
+    padding: 10px 20px; border: none; border-radius: 4px;
+    font-family: 'Oswald', sans-serif; font-size: 14px;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .btn-primary { background: var(--gold); color: #080c18; font-weight: 600; }
+  .btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+  .btn-outline:hover { background: rgba(201,168,76,0.1); }
+  .btn-danger { background: transparent; color: var(--alert); border: 1px solid var(--alert); padding: 6px 12px; font-size: 12px; }
+  .btn-danger:hover { background: rgba(239,68,68,0.12); }
+  .btn-edit { background: transparent; color: var(--blue-accent); border: 1px solid var(--blue-accent); padding: 6px 12px; font-size: 12px; }
+  .btn-edit:hover { background: rgba(37,99,235,0.12); }
+
+  /* RANK TABS */
+  .rank-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .rank-tab {
+    padding: 6px 16px; border-radius: 3px;
+    font-family: 'Oswald', sans-serif; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; border: 1px solid var(--border);
+    color: var(--muted); background: transparent; transition: all 0.18s;
+  }
+  .rank-tab:hover { border-color: var(--gold); color: var(--gold); }
+  .rank-tab.active { background: var(--gold); color: #080c18; border-color: var(--gold); font-weight: 600; }
+
+  /* TABLE */
+  .table-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .table-header-row {
+    background: #0c1120; border-bottom: 2px solid var(--gold);
+    display: grid; grid-template-columns: 100px 160px 1fr 140px 120px 130px;
+    padding: 12px 16px; gap: 12px;
+  }
+  .th {
+    font-family: 'Oswald', sans-serif; font-size: 11px;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--gold); font-weight: 600;
+    cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .th:hover { color: var(--gold2); }
+
+  .roster-row {
+    display: grid; grid-template-columns: 100px 160px 1fr 140px 120px 130px;
+    padding: 14px 16px; gap: 12px; border-bottom: 1px solid var(--border);
+    align-items: center; transition: background 0.15s;
+    animation: rowIn 0.25s ease both;
+  }
+  @keyframes rowIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:none; } }
+  .roster-row:last-child { border-bottom: none; }
+  .roster-row:hover { background: rgba(201,168,76,0.04); }
+
+  .badge-num { font-family: 'Share Tech Mono', monospace; font-size: 15px; color: var(--gold); font-weight: 700; letter-spacing: 1px; }
+  .officer-name { font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 600; color: var(--white); letter-spacing: 0.5px; }
+
+  .rank-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 3px;
+    font-family: 'Oswald', sans-serif; font-size: 11px;
+    letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; border: 1px solid;
+  }
+
+  .time-on-force { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--text); }
+
+  .status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:6px; }
+  .status-active .status-dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-inactive .status-dot { background: var(--muted); }
+  .status-loa .status-dot { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+
+  .row-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .empty-state { padding: 60px 20px; text-align: center; color: var(--muted); }
+  .empty-state h3 { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 3px; margin-bottom: 8px; text-transform: uppercase; }
+
+  .section-label {
+    font-family: 'Oswald', sans-serif; font-size: 10px;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--muted); padding: 8px 16px 6px;
+    border-bottom: 1px solid var(--border); background: rgba(10,14,26,0.4);
+  }
+
+  .select-filter {
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Oswald', sans-serif;
+    font-size: 13px; letter-spacing: 1px;
+    padding: 10px 14px; border-radius: 4px; outline: none; cursor: pointer;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(5,8,18,0.85); backdrop-filter: blur(4px);
+    z-index: 100; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--navy2); border: 1px solid var(--gold);
+    border-radius: 8px; width: 520px; max-width: 95vw;
+    box-shadow: 0 0 60px rgba(201,168,76,0.15); animation: modalIn 0.22s ease;
+  }
+  @keyframes modalIn { from { opacity:0; transform:scale(0.96) translateY(10px); } to { opacity:1; transform:none; } }
+  .modal-header {
+    background: #0c1120; border-bottom: 1px solid var(--gold);
+    padding: 18px 24px; display: flex; align-items: center;
+    justify-content: space-between; border-radius: 8px 8px 0 0;
+  }
+  .modal-title { font-family: 'Oswald', sans-serif; font-size: 16px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+  .modal-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; padding: 2px 6px; border-radius: 3px; transition: color 0.2s; }
+  .modal-close:hover { color: var(--alert); }
+  .modal-body { padding: 24px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1/-1; }
+  label { font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end; }
+
+  /* PASSWORD MODAL */
+  .pw-modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(5,8,18,0.9); backdrop-filter: blur(6px);
+    z-index: 300; align-items: center; justify-content: center;
+  }
+  .pw-modal-overlay.open { display: flex; }
+  .pw-modal {
+    background: var(--navy2); border: 1px solid var(--gold);
+    border-radius: 8px; width: 380px; max-width: 94vw;
+    box-shadow: 0 0 80px rgba(201,168,76,0.2); animation: modalIn 0.22s ease; overflow: hidden;
+  }
+  .pw-modal-header { background: #0c1120; border-bottom: 1px solid var(--gold); padding: 18px 24px; text-align: center; }
+  .pw-modal-header h3 { font-family: 'Oswald', sans-serif; font-size: 14px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); }
+  .pw-modal-body { padding: 28px 24px; }
+  .pw-modal-body p { font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-bottom: 16px; font-family: 'Share Tech Mono', monospace; text-align: center; }
+  .pw-input-wrap input { width: 100%; font-family: 'Share Tech Mono', monospace; font-size: 16px; letter-spacing: 3px; text-align: center; }
+  .pw-error { margin-top: 10px; font-family: 'Oswald', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--alert); text-align: center; min-height: 18px; }
+  .pw-modal-footer { padding: 0 24px 24px; display: flex; gap: 10px; }
+  .pw-modal-footer .btn { flex: 1; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 28px; right: 28px;
+    background: var(--panel); border: 1px solid var(--gold);
+    border-radius: 6px; padding: 14px 20px;
+    font-family: 'Oswald', sans-serif; font-size: 13px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    transform: translateY(80px); opacity: 0; transition: all 0.3s ease;
+    z-index: 200; pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  @media (max-width: 768px) {
+    .header { flex-wrap: wrap; padding: 16px; gap: 16px; }
+    .header-stats { margin-left: 0; flex-direction: row; flex-wrap: wrap; gap: 12px; }
+    .table-header-row, .roster-row { grid-template-columns: 80px 1fr 110px 100px; }
+    .th:nth-child(3), .roster-row > *:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <svg class="badge-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="none" stroke="#c9a84c" stroke-width="2.5"/>
+    <polygon points="50,15 58,38 83,38 63,53 70,78 50,63 30,78 37,53 17,38 42,38" fill="rgba(201,168,76,0.08)" stroke="#c9a84c" stroke-width="1"/>
+    <circle cx="50" cy="50" r="18" fill="rgba(201,168,76,0.12)" stroke="#c9a84c" stroke-width="1.5"/>
+    <text x="50" y="55" text-anchor="middle" font-family="Oswald,sans-serif" font-size="11" font-weight="700" fill="#c9a84c">PD</text>
+  </svg>
+
+  <div class="header-text">
+    <h1>Cape Oakwich</h1>
+    <h2>Police Department</h2>
+    <p id="timestamp">Personnel Roster — Loading...</p>
+  </div>
+
+  <div class="header-right">
+    <button class="admin-btn" id="adminBtn" onclick="handleAdminBtn()">
+      <span id="adminIcon">🔒</span><span id="adminLabel">Admin Login</span>
+    </button>
+    <div class="header-stats">
+      <div class="stat">
+        <span class="stat-num" id="stat-total">0</span>
+        <span class="stat-label">Officers</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="stat-active" style="color:var(--green)">0</span>
+        <span class="stat-label">Active</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="stat-command" style="color:var(--blue-accent)">0</span>
+        <span class="stat-label">Command</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view-only-banner" id="viewOnlyBanner">
+  👁 View-Only Mode — Roster is read-only
+</div>
+
+<div class="main">
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <input type="text" class="search-box" id="searchInput" placeholder="Search officer name or badge...">
+      <select class="select-filter" id="statusFilter">
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="loa">LOA</option>
+        <option value="inactive">Inactive</option>
+      </select>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-primary" id="enrollBtn" onclick="openAddModal()" style="display:none">+ Enroll Officer</button>
+    </div>
+  </div>
+
+  <div class="rank-tabs">
+    <button class="rank-tab active" onclick="setRankFilter('all', this)">All Ranks</button>
+    <button class="rank-tab" onclick="setRankFilter('chief', this)">Chief</button>
+    <button class="rank-tab" onclick="setRankFilter('deputy_chief', this)">Deputy Chief</button>
+    <button class="rank-tab" onclick="setRankFilter('captain', this)">Captain</button>
+    <button class="rank-tab" onclick="setRankFilter('lieutenant', this)">Lieutenant</button>
+    <button class="rank-tab" onclick="setRankFilter('sergeant', this)">Sergeant</button>
+    <button class="rank-tab" onclick="setRankFilter('corporal', this)">Corporal</button>
+    <button class="rank-tab" onclick="setRankFilter('officer', this)">Officer</button>
+    <button class="rank-tab" onclick="setRankFilter('probationary', this)">Probationary</button>
+    <button class="rank-tab" onclick="setRankFilter('cadet', this)">Cadet</button>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-header-row">
+      <div class="th" onclick="sortBy('badge')">Badge # <span id="sort-badge"></span></div>
+      <div class="th" onclick="sortBy('name')">Officer Name <span id="sort-name"></span></div>
+      <div class="th" onclick="sortBy('rank')">Rank <span id="sort-rank"></span></div>
+      <div class="th" onclick="sortBy('joinDate')">Time on Force <span id="sort-joinDate"></span></div>
+      <div class="th" onclick="sortBy('status')">Status <span id="sort-status"></span></div>
+      <div class="th" style="justify-content:flex-end">Actions</div>
+    </div>
+    <div id="rosterBody"></div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Enroll New Officer</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Badge Number</label>
+          <input type="text" id="f-badge" placeholder="e.g. 001">
+        </div>
+        <div class="form-group">
+          <label>Officer Name</label>
+          <input type="text" id="f-name" placeholder="Full name or SL username">
+        </div>
+        <div class="form-group">
+          <label>Rank</label>
+          <select id="f-rank">
+            <option value="cadet">Cadet</option>
+            <option value="probationary">Probationary Officer</option>
+            <option value="officer" selected>Officer</option>
+            <option value="corporal">Corporal</option>
+            <option value="sergeant">Sergeant</option>
+            <option value="lieutenant">Lieutenant</option>
+            <option value="captain">Captain</option>
+            <option value="deputy_chief">Deputy Chief</option>
+            <option value="chief">Chief</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="f-status">
+            <option value="active">Active</option>
+            <option value="loa">LOA</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Date Joined / Enrolled</label>
+          <input type="text" id="f-joinDate" placeholder="YYYY-MM-DD">
+        </div>
+        <div class="form-group">
+          <label>Division / Unit</label>
+          <input type="text" id="f-division" placeholder="e.g. Patrol, K9, CID">
+        </div>
+        <div class="form-group full">
+          <label>Notes</label>
+          <input type="text" id="f-notes" placeholder="Optional notes, commendations, etc.">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveOfficer()" id="saveBtn">Enroll Officer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Password Modal -->
+<div class="pw-modal-overlay" id="pwModalOverlay">
+  <div class="pw-modal">
+    <div class="pw-modal-header">
+      <h3>🔒 Admin Access — Cape Oakwich PD</h3>
+    </div>
+    <div class="pw-modal-body">
+      <p>Enter administrator password to unlock editing</p>
+      <div class="pw-input-wrap">
+        <input type="password" id="pwInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()">
+      </div>
+      <div class="pw-error" id="pwError"></div>
+    </div>
+    <div class="pw-modal-footer">
+      <button class="btn btn-outline" onclick="closePwModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="checkPassword()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── AUTH ────────────────────────────────────────────────────────────────────
+const ADMIN_PW = atob('MTk0NDY3'); // password: 194467
+let isAdmin = sessionStorage.getItem('copd_admin') === '1';
+
+function applyAdminState() {
+  const btn = document.getElementById('adminBtn');
+  const banner = document.getElementById('viewOnlyBanner');
+  const enrollBtn = document.getElementById('enrollBtn');
+  if (isAdmin) {
+    btn.className = 'admin-btn unlocked';
+    document.getElementById('adminIcon').textContent = '🔓';
+    document.getElementById('adminLabel').textContent = 'Admin — Lock';
+    banner.style.display = 'none';
+    enrollBtn.style.display = '';
+  } else {
+    btn.className = 'admin-btn';
+    document.getElementById('adminIcon').textContent = '🔒';
+    document.getElementById('adminLabel').textContent = 'Admin Login';
+    banner.style.display = '';
+    enrollBtn.style.display = 'none';
+  }
+}
+
+function handleAdminBtn() {
+  if (isAdmin) {
+    isAdmin = false;
+    sessionStorage.removeItem('copd_admin');
+    applyAdminState();
+    renderRoster();
+    showToast('Admin session ended');
+  } else {
+    openPwModal();
+  }
+}
+
+function openPwModal() {
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').textContent = '';
+  document.getElementById('pwModalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('pwInput').focus(), 80);
+}
+function closePwModal() {
+  document.getElementById('pwModalOverlay').classList.remove('open');
+}
+function checkPassword() {
+  if (document.getElementById('pwInput').value === ADMIN_PW) {
+    isAdmin = true;
+    sessionStorage.setItem('copd_admin', '1');
+    closePwModal();
+    applyAdminState();
+    renderRoster();
+    showToast('Admin access granted');
+  } else {
+    document.getElementById('pwError').textContent = 'Incorrect password';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'copd_roster_cape_oakwich';
+let roster = [];
+let editingId = null;
+let sortField = 'badge';
+let sortDir = 1;
+let rankFilter = 'all';
+
+const RANKS = {
+  chief:        { label: 'Chief of Police',      color: '#c9a84c', bg: 'rgba(201,168,76,0.12)',  tier: 9 },
+  deputy_chief: { label: 'Deputy Chief',          color: '#e8c96a', bg: 'rgba(232,201,106,0.1)', tier: 8 },
+  captain:      { label: 'Captain',               color: '#60a5fa', bg: 'rgba(96,165,250,0.1)',  tier: 7 },
+  lieutenant:   { label: 'Lieutenant',            color: '#818cf8', bg: 'rgba(129,140,248,0.1)', tier: 6 },
+  sergeant:     { label: 'Sergeant',              color: '#34d399', bg: 'rgba(52,211,153,0.1)',  tier: 5 },
+  corporal:     { label: 'Corporal',              color: '#6ee7b7', bg: 'rgba(110,231,183,0.1)', tier: 4 },
+  officer:      { label: 'Officer',               color: '#d0d8f0', bg: 'rgba(208,216,240,0.07)',tier: 3 },
+  probationary: { label: 'Probationary Officer',  color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  tier: 2 },
+  cadet:        { label: 'Cadet',                 color: '#9ca3af', bg: 'rgba(156,163,175,0.1)', tier: 1 },
+};
+const COMMAND_RANKS = ['chief','deputy_chief','captain','lieutenant'];
+
+function load() { try { roster = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { roster = []; } }
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(roster)); }
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function timeOnForce(dateStr) {
+  if (!dateStr) return '—';
+  // Parse as local date (not UTC) to avoid timezone day-shift
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+  if (isNaN(d)) return dateStr;
+  const now = new Date();
+
+  let years  = now.getFullYear() - d.getFullYear();
+  let months = now.getMonth()    - d.getMonth();
+  let days   = now.getDate()     - d.getDate();
+
+  if (days < 0) {
+    months--;
+    days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+  }
+  if (months < 0) { years--; months += 12; }
+
+  if (years  > 0) return `${years}y ${months}mo ${days}d`;
+  if (months > 0) return `${months}mo ${days}d`;
+  return `${days}d`;
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+function updateTimestamp() {
+  document.getElementById('timestamp').textContent =
+    `Personnel Roster — ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const sf = document.getElementById('statusFilter').value;
+  return roster.filter(o => {
+    const matchQ = !q || o.name.toLowerCase().includes(q) || String(o.badge).includes(q);
+    const matchR = rankFilter === 'all' || o.rank === rankFilter;
+    const matchS = !sf || o.status === sf;
+    return matchQ && matchR && matchS;
+  }).sort((a,b) => {
+    let av = a[sortField], bv = b[sortField];
+    if (sortField === 'rank') { av = RANKS[a.rank]?.tier||0; bv = RANKS[b.rank]?.tier||0; }
+    if (av < bv) return -sortDir;
+    if (av > bv) return sortDir;
+    return 0;
+  });
+}
+
+function renderRoster() {
+  const data = getFiltered();
+  const body = document.getElementById('rosterBody');
+
+  document.getElementById('stat-total').textContent = roster.length;
+  document.getElementById('stat-active').textContent = roster.filter(o => o.status === 'active').length;
+  document.getElementById('stat-command').textContent = roster.filter(o => COMMAND_RANKS.includes(o.rank)).length;
+
+  ['badge','name','rank','joinDate','status'].forEach(f => {
+    const el = document.getElementById('sort-'+f);
+    if (el) el.textContent = sortField === f ? (sortDir === 1 ? '↑' : '↓') : '';
+  });
+
+  if (data.length === 0) {
+    body.innerHTML = `<div class="empty-state"><h3>No Personnel Found</h3><p>Adjust filters or enroll a new officer.</p></div>`;
+    return;
+  }
+
+  let lastTier = null, html = '';
+  data.forEach(o => {
+    const r = RANKS[o.rank] || RANKS.officer;
+    if (sortField === 'rank' && r.tier !== lastTier) {
+      html += `<div class="section-label">${r.label}</div>`;
+      lastTier = r.tier;
+    }
+    const statusLabel = { active:'Active', loa:'LOA', inactive:'Inactive' }[o.status] || o.status;
+    const actions = isAdmin
+      ? `<button class="btn btn-edit" onclick="openEditModal('${o.id}')">Edit</button>
+         <button class="btn btn-danger" onclick="deleteOfficer('${o.id}')">Remove</button>`
+      : '';
+
+    html += `<div class="roster-row">
+      <div class="badge-num">#${escHtml(o.badge)}</div>
+      <div>
+        <div class="officer-name">${escHtml(o.name)}</div>
+        ${o.division ? `<div style="font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:1px;font-family:'Oswald',sans-serif;text-transform:uppercase">${escHtml(o.division)}</div>` : ''}
+      </div>
+      <div>
+        <span class="rank-badge" style="color:${r.color};background:${r.bg};border-color:${r.color}40">${r.label}</span>
+        ${o.notes ? `<div style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic">${escHtml(o.notes.slice(0,40))}${o.notes.length>40?'…':''}</div>` : ''}
+      </div>
+      <div class="time-on-force">${timeOnForce(o.joinDate)}<br><span style="font-size:10px;color:var(--muted)">${o.joinDate||'—'}</span></div>
+      <div class="status-${o.status||'active'}" style="font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase">
+        <span class="status-dot"></span>${statusLabel}
+      </div>
+      <div class="row-actions">${actions}</div>
+    </div>`;
+  });
+  body.innerHTML = html;
+}
+
+// ─── FILTERS ─────────────────────────────────────────────────────────────────
+function setRankFilter(rank, btn) {
+  rankFilter = rank;
+  document.querySelectorAll('.rank-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderRoster();
+}
+function sortBy(field) {
+  if (sortField === field) sortDir *= -1; else { sortField = field; sortDir = 1; }
+  renderRoster();
+}
+document.getElementById('searchInput').addEventListener('input', renderRoster);
+document.getElementById('statusFilter').addEventListener('change', renderRoster);
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function openAddModal() {
+  if (!isAdmin) return;
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Enroll New Officer';
+  document.getElementById('saveBtn').textContent = 'Enroll Officer';
+  ['badge','name','division','notes'].forEach(id => document.getElementById('f-'+id).value = '');
+  document.getElementById('f-rank').value = 'officer';
+  document.getElementById('f-status').value = 'active';
+  document.getElementById('f-joinDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('f-badge').focus();
+}
+function openEditModal(id) {
+  if (!isAdmin) return;
+  const o = roster.find(r => r.id === id);
+  if (!o) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Officer Record';
+  document.getElementById('saveBtn').textContent = 'Save Changes';
+  document.getElementById('f-badge').value = o.badge;
+  document.getElementById('f-name').value = o.name;
+  document.getElementById('f-rank').value = o.rank;
+  document.getElementById('f-status').value = o.status || 'active';
+  document.getElementById('f-joinDate').value = o.joinDate || '';
+  document.getElementById('f-division').value = o.division || '';
+  document.getElementById('f-notes').value = o.notes || '';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+document.getElementById('modalOverlay').addEventListener('click', e => { if (e.target === document.getElementById('modalOverlay')) closeModal(); });
+
+function saveOfficer() {
+  if (!isAdmin) return;
+  const badge = document.getElementById('f-badge').value.trim();
+  const name = document.getElementById('f-name').value.trim();
+  if (!badge || !name) { showToast('Badge # and name required'); return; }
+  if (editingId) {
+    const idx = roster.findIndex(o => o.id === editingId);
+    if (idx > -1) {
+      roster[idx] = { ...roster[idx], badge, name,
+        rank: document.getElementById('f-rank').value,
+        status: document.getElementById('f-status').value,
+        joinDate: document.getElementById('f-joinDate').value,
+        division: document.getElementById('f-division').value.trim(),
+        notes: document.getElementById('f-notes').value.trim(),
+      };
+      showToast('Officer record updated');
+    }
+  } else {
+    roster.push({ id: uid(), badge, name,
+      rank: document.getElementById('f-rank').value,
+      status: document.getElementById('f-status').value,
+      joinDate: document.getElementById('f-joinDate').value,
+      division: document.getElementById('f-division').value.trim(),
+      notes: document.getElementById('f-notes').value.trim(),
+      enrolled: Date.now(),
+    });
+    showToast('Officer enrolled');
+  }
+  save(); closeModal(); renderRoster();
+}
+
+function deleteOfficer(id) {
+  if (!isAdmin) return;
+  if (!confirm('Remove this officer from the roster?')) return;
+  roster = roster.filter(o => o.id !== id);
+  save(); renderRoster(); showToast('Officer removed');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+load();
+updateTimestamp();
+applyAdminState();
+renderRoster();
+</script>
+</body>
+</html>
